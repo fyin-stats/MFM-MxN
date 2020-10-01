@@ -23,6 +23,26 @@ sim_10by6_1 <- readRDS("./sim_10by6_1_3clusters.rds")
 # sim_10by6_1_noise025 <- readRDS("./sim_10by6_1_noise025_3clusters_copy2_augmented.rds")
 # sim_10by6_1 <- readRDS("./sim_10by6_1_3clusters_augmented.rds")
 #######################
+signal_strength = 1
+# noise_factor <- 1
+# M1
+M1 <- matrix(0,nrow=10,ncol=6)
+M1[5:6,2:5] <- signal_strength
+M1[2:9,3:4] <- signal_strength
+rownames(M1) <- 1:10
+colnames(M1) <- 1:6
+# M2 : dumbell
+M2 <- matrix(0,nrow=10,ncol=6)
+M2[1,2:5] <- signal_strength
+M2[2:9,3] <- signal_strength
+M2[10,2:5] <- signal_strength
+rownames(M2) <- 1:10
+colnames(M2) <- 1:6
+# M3 : square
+M3 <- matrix(0,nrow=10,ncol=6)
+M3[4:7,2:5] <- signal_strength
+rownames(M3) <- 1:10
+colnames(M3) <- 1:6
 ### Mean matrices
 # sample size: 100
 jpeg("shape_10by6_simulation_n100_recovered_M1.jpg")
