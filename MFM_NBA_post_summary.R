@@ -55,19 +55,89 @@ for(i in 1:length(NBA_rlt_Dahl_log_mean_intensity_25_18_50reps_6000iters)){
   mean_RI_25_18_vec[i] <- mean(do.call("c", lapply(NBA_rlt_Dahl_log_mean_intensity_25_18_50reps_6000iters,function(x) fossil::adj.rand.index(NBA_rlt_Dahl_log_mean_intensity_25_18_50reps_6000iters[[i]]$zout, x$zout)))[-i])
 }
 #####
-which(mean_RI_25_18_vec==max(mean_RI_25_18_vec))
-#####
-NBA_rlt_Dahl_log_mean_intensity_25_18_50reps_6000iters[[45]]$zout %>% max()
+# which(mean_RI_25_18_vec==max(mean_RI_25_18_vec))
+# #####
+# NBA_rlt_Dahl_log_mean_intensity_25_18_50reps_6000iters[[45]]$zout %>% max()
+# ######
+# # 1 10 14 16 17 20 22 25 27 36 42 44 45
+# NameList[NBA_rlt_Dahl_log_mean_intensity_25_18_50reps_6000iters[[17]]$zout==2]
+
+###### levelplot for covariance matrix estimates
+# U
+tool_matrix <- matrix(1, nrow = nrow(NBA_rlt_Dahl_log_intensity$Uout),ncol = ncol(NBA_rlt_Dahl_log_intensity$Uout))
+#
+X <- data.frame(cbind(which(tool_matrix==1, arr.ind = T),1:length(c(NBA_rlt_Dahl_log_intensity$Uout))))
+colnames(X) <- c("x", "y", "linear_index")
+Ufit_dat <- data.frame(y = X$y, x = X$x, value = c(NBA_rlt_Dahl_log_intensity$Uout))
+#############
+# ggsave(p, file = "../manuscript/plots/IntenFit.pdf", height = 5, width = 4)
+# levelplot(value~x*y,Ufit_dat, 
+#           col.regions = terrain.colors(100)[length(terrain.colors(100)):1], 
+#           xlab = "X", ylab = "Y",
+#           scales = list(x = list(at = seq(0, nrow(NBA_rlt_Dahl_log_intensity$Uout), length.out = 5)), 
+#                         y = list(at = seq(0, ncol(NBA_rlt_Dahl_log_intensity$Uout), length.out = 5))))
+#############
+breaks <- seq(min(c(Ufit_dat$value)), max(c(Ufit_dat$value)), length.out = 100)
+cols <- terrain.colors(100)[length(terrain.colors(100)):1]
+# colorRampPalette(c("grey", "yellow", "green"))(length(breaks) - 1)
 ######
-# 1 10 14 16 17 20 22 25 27 36 42 44 45
-NameList[NBA_rlt_Dahl_log_mean_intensity_25_18_50reps_6000iters[[17]]$zout==2]
+pU <- levelplot(value~x*y,Ufit_dat, 
+                  col.regions = cols, at = breaks, 
+                  xlab = "", ylab = "", main = "U",
+                  scales = list(x = list(at = seq(0, nrow(NBA_rlt_Dahl_log_intensity$Uout), length.out = 6)), 
+                                y = list(at = seq(0, ncol(NBA_rlt_Dahl_log_intensity$Uout), length.out = 6))))
 
 
+###############
+### V 
+tool_matrix <- matrix(1, nrow = nrow(NBA_rlt_Dahl_log_intensity$Vout),ncol = ncol(NBA_rlt_Dahl_log_intensity$Vout))
+#
+X <- data.frame(cbind(which(tool_matrix==1, arr.ind = T),1:length(c(NBA_rlt_Dahl_log_intensity$Vout))))
+colnames(X) <- c("x", "y", "linear_index")
+Vfit_dat <- data.frame(y = X$y, x = X$x, value = c(NBA_rlt_Dahl_log_intensity$Vout))
+#############
+# ggsave(p, file = "../manuscript/plots/IntenFit.pdf", height = 5, width = 4)
+# levelplot(value~x*y,Vfit_dat, 
+#           col.regions = terrain.colors(100)[length(terrain.colors(100)):1], 
+#           xlab = "X", ylab = "Y",
+#           scales = list(x = list(at = seq(0, nrow(NBA_rlt_Dahl_log_intensity$Vout), length.out = 5)), 
+#                         y = list(at = seq(0, ncol(NBA_rlt_Dahl_log_intensity$Vout), length.out = 5))))
+#############
+breaks <- seq(min(c(Vfit_dat$value)), max(c(Vfit_dat$value)), length.out = 100)
+cols <- terrain.colors(100)[length(terrain.colors(100)):1]
+# colorRampPalette(c("grey", "yellow", "green"))(length(breaks) - 1)
+######
+pV <- levelplot(value~x*y,Vfit_dat, 
+                col.regions = cols, at = breaks, 
+                xlab = "", ylab = "", main = "V",
+                scales = list(x = list(at = seq(0, nrow(NBA_rlt_Dahl_log_intensity$Vout), length.out = 4)), 
+                              y = list(at = seq(0, ncol(NBA_rlt_Dahl_log_intensity$Vout), length.out = 4))))
 
-
-
-
-
+#### VxU
+VxU <- NBA_rlt_Dahl_log_intensity$Vout %x% NBA_rlt_Dahl_log_intensity$Uout
+####
+tool_matrix <- matrix(1, nrow = nrow(VxU),ncol = ncol(VxU))
+#
+X <- data.frame(cbind(which(tool_matrix==1, arr.ind = T),1:length(c(VxU))))
+colnames(X) <- c("x", "y", "linear_index")
+VxUfit_dat <- data.frame(y = X$y, x = X$x, value = c(VxU))
+#############
+# ggsave(p, file = "../manuscript/plots/IntenFit.pdf", height = 5, width = 4)
+# levelplot(value~x*y,Vfit_dat, 
+#           col.regions = terrain.colors(100)[length(terrain.colors(100)):1], 
+#           xlab = "X", ylab = "Y",
+#           scales = list(x = list(at = seq(0, nrow(NBA_rlt_Dahl_log_intensity$Vout), length.out = 5)), 
+#                         y = list(at = seq(0, ncol(NBA_rlt_Dahl_log_intensity$Vout), length.out = 5))))
+#############
+breaks <- seq(min(c(VxUfit_dat$value)), max(c(VxUfit_dat$value)), length.out = 100)
+cols <- terrain.colors(100)[length(terrain.colors(100)):1]
+# colorRampPalette(c("grey", "yellow", "green"))(length(breaks) - 1)
+######
+pVxU <- levelplot(value~x*y,VxUfit_dat, 
+                col.regions = cols, at = breaks, 
+                xlab = "", ylab = "", main = "V kronecker U",
+                scales = list(x = list(at = seq(0, nrow(VxU), length.out = 4)), 
+                              y = list(at = seq(0, ncol(VxU), length.out = 4))))
 
 # #################################
 # fossil::rand.index(NBA_rlt_Dahl_log_mean_intensity_25_18_50reps_6000iters[[1]]$zout,

@@ -167,7 +167,7 @@ for(i in 1:length(total_sample_size)){
     temp_MFM_Dahl_rlt <- getDahl(temp_MFM_rlt,burn=1000)
     temp_time2 <- Sys.time()
     ## k-means
-    k_vec <- 2:10
+    k_vec <- 1:max(temp_MFM_Dahl_rlt$zout)
     temp_kmeans_list <- vector(mode="list", length=length(k_vec))
     temp_kmeans_aic <- rep(NA, length=length(k_vec))
     temp_kmeans_bic <- rep(NA, length=length(k_vec))

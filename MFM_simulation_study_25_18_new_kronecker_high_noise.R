@@ -13,7 +13,7 @@ packages <- c("matrixNormal","mniw","MCMCpack",
 # https://cran.r-project.org/web/packages/MixMatrix/vignettes/matrixnormal.html
 ipak(packages)
 #########################################################
-registerDoParallel(cores=50)
+registerDoParallel(cores=55)
 source("MFM_MN.R")
 ### simulation study 17*12 based on the results from NBA data
 ar1_cor <- function(n, rho) {
@@ -161,7 +161,7 @@ rho <- c(0.9,0.6,0.3)
 noise_sd <- c(1.5,1,0.5)
 simulation_settings_df <- data.frame(expand.grid(rho, noise_sd))
 colnames(simulation_settings_df) <- c("rho","noise_sd")
-num_replicates <- c(50)
+num_replicates <- c(100)
 cluster_proportion <- c(0.3,0.4,0.3)
 ###
 sim_25by18 <- vector(mode="list", length = nrow(simulation_settings_df))
@@ -221,7 +221,7 @@ for(i in 1:nrow(simulation_settings_df)){
     # run MFM analysis
     temp_time1 <- Sys.time()
     temp_MFM_rlt <- CDMFM_new1_log(data=dat_sim, 
-                                   niterations=1000, 
+                                   niterations=1200, 
                                    alpha=(1+dim(dat_sim)[1])/2, beta=diag(rep(0.5,dim(dat_sim)[1])), 
                                    psi=(1+dim(dat_sim)[2])/2, rho=diag(rep(0.5,dim(dat_sim)[2])), 
                                    GAMMA=3, 
@@ -230,9 +230,9 @@ for(i in 1:nrow(simulation_settings_df)){
                                    Omega0=diag( ((apply(dat_sim, c(2), max)-apply(dat_sim, c(2), min))/4)^2 ), 
                                    initNClusters=sample(2:10,size=1), 
                                    VN=VN, MLE.initial=TRUE)
-    RI_MFM_trace <- rep(NA, 1000)
-    ARI_MFM_trace <- rep(NA, 1000)
-    for(ii in 1:1000){
+    RI_MFM_trace <- rep(NA, 1200)
+    ARI_MFM_trace <- rep(NA, 1200)
+    for(ii in 1:1200){
       RI_MFM_trace[ii] <- fossil::rand.index(true_cluster_membership,temp_MFM_rlt$Iterates[[ii]]$zout)
       ARI_MFM_trace[ii] <- fossil::adj.rand.index(true_cluster_membership,temp_MFM_rlt$Iterates[[ii]]$zout)
     }
@@ -240,7 +240,7 @@ for(i in 1:nrow(simulation_settings_df)){
     temp_MFM_Dahl_rlt <- getDahl(temp_MFM_rlt,burn=600)
     temp_time2 <- Sys.time()
     ## k-means
-    k_vec <- 2:10
+    k_vec <- 1:max(temp_MFM_Dahl_rlt$zout)
     temp_kmeans_list <- vector(mode="list", length=length(k_vec))
     temp_kmeans_aic <- rep(NA, length=length(k_vec))
     temp_kmeans_bic <- rep(NA, length=length(k_vec))
@@ -255,7 +255,7 @@ for(i in 1:nrow(simulation_settings_df)){
     temp_kmeans_rlt_3 <- temp_kmeans_list[which(k_vec==3)]
     temp_kmeans_rlt_MFM <- temp_kmeans_list[which(k_vec==max(temp_MFM_Dahl_rlt$zout))]
     temp_time3 <- Sys.time()
-    
+    ####
     temp_specc_rlt_3 <- kernlab::specc(dat_sim_vector, centers=3)
     temp_specc_rlt_MFM <- kernlab::specc(dat_sim_vector, centers=max(temp_MFM_Dahl_rlt$zout))
     temp_time4 <- Sys.time()
